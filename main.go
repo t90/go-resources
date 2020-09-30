@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"resource/res"
 	"strings"
 )
@@ -16,7 +17,7 @@ type ResourceData struct {
 	Data string
 }
 
-func main() {
+func main(){
 	if len(os.Args) < 3 {
 		println("USAGE: resource <output filename.go> <input file 1> [input file 2, 3, ...] ")
 		return
@@ -29,34 +30,35 @@ func main() {
 	}
 	count := len(inputFiles)
 
-	f, err := os.Create(os.Args[1])
+	f,err := os.Create(os.Args[1])
 	defer f.Close()
 
-	if err != nil {
+	if err != nil{
 		panic(err)
 	}
 	var buf bytes.Buffer
-	template := string(res.Resources["res_template.gtp"])
+	template := string(res.R_res_template_gtp)
 
-	for ; count > 0; count-- {
-		res := <-resources
-		fmt.Fprintf(&buf, "\t\"%s\": {%s},\n", res.Name, res.Data)
+	for ;count > 0; count--{
+		res := <- resources
+		fmt.Fprintf(&buf, "var %s = []byte{%s}\n", res.Name, res.Data)
 	}
-	template = strings.Replace(template, "%LINE_ITEMS%", buf.String(), -1)
+	template = strings.Replace(template, "%LINE_ITEMS%", buf.String(),-1)
 	f.WriteString(template)
 }
 
 func encodeResource(name string, resources chan ResourceData) {
+	re := regexp.MustCompile("[^a-zA-Z0-9]")
 	resData := ResourceData{
-		Name: path.Base(name),
+		Name: "R_" + re.ReplaceAllString(path.Base(name), "_"),
 	}
 	data, err := ioutil.ReadFile(name)
-	if err != nil {
+	if err != nil{
 		panic(err)
 	}
 	size := len(data)
-	bytes := make([]string, size)
-	for i, v := range data {
+	bytes := make([]string,size)
+	for i,v := range data{
 		bytes[i] = fmt.Sprintf("0x%x", v)
 	}
 	resData.Data = strings.Join(bytes, ",")

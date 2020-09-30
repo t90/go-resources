@@ -1,5 +1,3 @@
 package res
 
-var Resources = map[string][]byte{
-    %LINE_ITEMS%
-}
+%LINE_ITEMS%
