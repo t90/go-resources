@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -25,6 +26,19 @@ func main(){
 	}
 	inputFiles := os.Args[2:]
 	resources := make(chan ResourceData)
+
+	var unwrapped []string
+
+	for _,file := range inputFiles{
+		matches, err := filepath.Glob(file)
+		if err != nil{
+			panic(err)
+		}
+		unwrapped = append(unwrapped, matches...)
+	}
+	inputFiles = unwrapped
+
+	
 
 	for _, fileName := range inputFiles {
 		go encodeResource(fileName, resources)
