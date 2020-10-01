@@ -1,4 +1,4 @@
-//go:generate go-resources $GOPATH/src/resource/res/res.go $GOPATH/src/resource/res_template.gtp
+//go:generate go-resources $GOPATH/src/github.com/t90/go-resources/resource/res/res.go $GOPATH/src/github.com/t90/go-resources/resource/res_template.gtp
 package main
 
 import (
@@ -8,8 +8,9 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"resource/res"
 	"strings"
+
+	"github.com/t90/go-resources/res"
 )
 
 type ResourceData struct {
